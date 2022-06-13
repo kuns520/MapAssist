@@ -266,8 +266,6 @@ namespace MapAssist.Helpers
                         cache[item.HashString] = item;
                     }
 
-                    item.IsPlayerOwned = rosterData.List[0].UnitId != uint.MaxValue && item.ItemData.dwOwnerID == rosterData.List[0].UnitId;
-
                     if (Items.ItemUnitIdsToSkip[_currentProcessId].Contains(item.UnitId)) continue;
 
                     if (_playerMapChanged[_currentProcessId] && item.IsAnyPlayerHolding && (item.IsIdentified || item.ItemData.ItemQuality <= ItemQuality.SUPERIOR) && !Items.ItemUnitIdsToSkip[_currentProcessId].Contains(item.UnitId))
@@ -318,6 +316,10 @@ namespace MapAssist.Helpers
                     return item;
                 }).Where(x => x != null).ToArray();
 
+                foreach (RosterEntry player in rosterData.List)
+                {
+                    player.Items = allItems.Where(x => x.ItemData.dwOwnerID == player.UnitId).ToList();
+                }
                 // Player wearing items
                 playerUnit.WearingItems = allItems.Where(x => x.IsPlayerOwned && x.ItemModeMapped == ItemModeMapped.Player).ToArray();
 
